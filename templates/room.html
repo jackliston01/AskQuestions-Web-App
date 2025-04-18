@@ -16,10 +16,10 @@
 <body>
     <p>Your name: {{name}}, Roomnum == {{roomid}}</p>
     <p id="lobbyinfo">Question Askers: </p>
-    <form >
+    <form onsubmit="event.preventDefault()">
         <label>What are you curious about?</label>
         <input type="text" id="question" name ='question' placeholder="Think big..."/>
-        <button onclick=sendQuestion(); event.preventDefault() >Submit your question</button>
+        <button onclick=sendQuestion() >Submit your question</button>
     </form>
 
 </body>
@@ -39,7 +39,6 @@
   })
 
 socketio.on("joined", (data) => {
-    emit("joined", {'roomdict': roomdict}, to=room)
     memberlist = ""
     const roomid = sessionStorage.getItem('room');
     roomdict = data.roomdict

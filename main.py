@@ -6,7 +6,6 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "vansucks"
 socketio = SocketIO(app)
 roomdict = {}
-
 def genroomid(length):
     chars = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] #31 items
     roomid = ""
@@ -25,7 +24,7 @@ def home():
         roomnum = request.form.get("roomnum")
         createroom = request.form.get("createroom", False)
         joinroom = request.form.get("joinroom", False)
-        
+    
         if not name or len(name)>20:
             print("bad")
             return render_template('home.html', name=name, error = "Enter a valid name (20 chars max.):" )
@@ -45,6 +44,8 @@ def home():
             return redirect(url_for("room"))
 
         if (joinroom != False and not roomnum):
+            if name in roomdict[roomnum]['members']:
+                return render_template('home.html', name=name, error = "Name already taken" )
             return render_template('home.html', name=name, error = "Enter a room numer" )
         elif  roomnum not in roomdict:
             return render_template('home.html', name=name, error = "Not a valid room number" )
@@ -78,32 +79,25 @@ def connect(auth):
         return
     room = session.get("room")
     name = session.get("name")
-    
-    print(room, name)
     if not room or not name:
         session.clear()
         print('error, room or name not found')
         emit('redirecthome', {'url': "/"} )
         return
-
     if room not in roomdict:
         leave_room(room)
         session.clear()
         print('error, room not found')
         emit('redirecthome', {'url': "/"} )
         return
-    
-    emit("connection", {"name": name, "room": room}, room=request.sid)
+    emit("joined", {'roomdict': roomdict}, to=room)
 
-    if session.get("name") in roomdict[session.get('room')]['members']:
-        print('already in room')
-        return
-   
-
+    print(room, name)
     join_room(room)
-    roomdict[room]['members'].append(name)
-    roomdict[room]['membercount'] += 1
-    print(roomdict)
+    if session.get("name") not in roomdict[session.get('room')]['members']:
+        roomdict[room]['members'].append(name)
+        roomdict[room]['membercount'] += 1
+        print(roomdict)
     emit("connection", {"name": name, "room": room}, room=request.sid)
     emit("joined", {'roomdict': roomdict}, to=room)
 
