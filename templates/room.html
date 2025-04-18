@@ -1,0 +1,68 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>TMS MUN</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='room.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/j.ico') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='home.js') }}"></script>
+
+    
+</head>
+<body>
+    <p>Your name: {{name}}, Roomnum == {{roomid}}</p>
+    <p id="lobbyinfo">Question Askers: </p>
+    <form >
+        <label>What are you curious about?</label>
+        <input type="text" id="question" name ='question' placeholder="Think big..."/>
+        <button onclick=sendQuestion(); event.preventDefault() >Submit your question</button>
+    </form>
+
+</body>
+<script>
+  var socketio = io();
+  sessionStorage.clear()
+
+  var memberlist = ''
+
+  
+  const lobbyinfo = document.getElementById("lobbyinfo")
+  socketio.on("connection", (data) => { 
+    sessionStorage.setItem('name', data.name)
+    sessionStorage.setItem('room', data.room)
+  
+
+  })
+
+socketio.on("joined", (data) => {
+    emit("joined", {'roomdict': roomdict}, to=room)
+    memberlist = ""
+    const roomid = sessionStorage.getItem('room');
+    roomdict = data.roomdict
+    console.log(roomdict)
+    for (let i =0; i < roomdict[roomid]['members'].length; i++ )
+        memberlist += ("<br>" + roomdict[roomid]['members'][i])
+    lobbyinfo.innerHTML = `${(roomdict[roomid]['membercount'])} Eager Question Askers <br> ${memberlist}`
+  })
+  socketio.on("redirecthome", (data) => {
+    console.log("Redirecting to", data.url);
+
+    window.location.href = data.url;
+});
+function sendQuestion(){
+    sQ = document.getElementById("question").value
+    console.log (sQ)
+    const name = sessionStorage.getItem('name')
+    const roomid = sessionStorage.getItem('room')
+    socketio.emit("inquiry", {"question" : sQ, "user": name, 'roomid': roomid })
+
+
+
+}
+
+</script>
+</html>
