@@ -21,6 +21,9 @@
         <input type="text" id="question" name ='question' placeholder="Think big..."/>
         <button onclick=sendQuestion() >Submit your question</button>
     </form>
+    <div id=board>
+
+    </div>
 
 </body>
 <script>
@@ -46,22 +49,71 @@ socketio.on("joined", (data) => {
     for (let i =0; i < roomdict[roomid]['members'].length; i++ )
         memberlist += ("<br>" + roomdict[roomid]['members'][i])
     lobbyinfo.innerHTML = `${(roomdict[roomid]['membercount'])} Eager Question Askers <br> ${memberlist}`
+    const board = document.getElementById("board");
+    if (board.querySelectorAll('div').length === 0) {
+
+
+console.log(data.roomdict[roomid].messages)
+console.log(data)
+console.log('---')
+const messages = data.roomdict[roomid].messages
+const board = document.getElementById('board')
+for (const message of messages){
+const div = document.createElement("div");
+div.setAttribute("data-id", message.id);
+div.setAttribute("id", 'message');
+const formattedtime = new Date(message.time)
+const clocktime = formattedtime.toTimeString().slice(0, 8);
+
+div.textContent = `${message.name} [${clocktime}]: ${message.question}`;
+board.appendChild(div);
+}
+
+    }
   })
   socketio.on("redirecthome", (data) => {
+    console.log()
     console.log("Redirecting to", data.url);
 
     window.location.href = data.url;
 });
 function sendQuestion(){
     sQ = document.getElementById("question").value
+    if (sQ === ""){
+        return
+    }
     console.log (sQ)
     const name = sessionStorage.getItem('name')
     const roomid = sessionStorage.getItem('room')
-    socketio.emit("inquiry", {"question" : sQ, "user": name, 'roomid': roomid })
-
+    socketio.emit("inquiry", {"question" : sQ, "user": name, 'roomid': roomid, 'time' : Date.now() })
 
 
 }
+socketio.on('inquiry', (data) => {
+const roomid = sessionStorage.getItem('room');
 
+console.log(data.roomdict[roomid].messages)
+console.log(data)
+console.log('---')
+const messages = data.roomdict[roomid].messages
+const message = messages[messages.length-1]
+console.log(message)
+const board = document.getElementById('board')
+
+    const div = document.createElement("div");
+    div.setAttribute("data-id", message.id);
+    div.setAttribute("id", 'message');
+    const formattedtime = new Date(message.time)
+    const clocktime = formattedtime.toTimeString().slice(0, 8);
+
+    div.textContent = `${message.name} [${clocktime}]: ${message.question}`;
+    board.appendChild(div);
+
+
+
+})
 </script>
 </html>
+
+
+

@@ -38,17 +38,18 @@ def home():
             session["name"] = name
             session["room"] = newroom
             
-            roomdict[newroom] = {'messages': [], 'members': [], 'membercount': 0}
+            roomdict[newroom] = {'messages': [], 'members': [], 'membercount': 0, 'totalmessages': 0}
             print(roomdict)
 
             return redirect(url_for("room"))
 
         if (joinroom != False and not roomnum):
-            if name in roomdict[roomnum]['members']:
-                return render_template('home.html', name=name, error = "Name already taken" )
+            
             return render_template('home.html', name=name, error = "Enter a room numer" )
         elif  roomnum not in roomdict:
             return render_template('home.html', name=name, error = "Not a valid room number" )
+        if name in roomdict[roomnum]['members']:
+                return render_template('home.html', name="", error = "Name already taken" )
         else:
             session["name"] = name
             session["room"] = roomnum
@@ -110,7 +111,13 @@ def inquiry(data):
         session.clear()
         emit('redirecthome', {'url': "/"} )
         return
+    room = data['roomid']
     print(data['question'])
+    id = (f'{(session.get('name')).replace(' ', '').lower()}{data['time']}')
+    roomdict[room]['messages'].append({'name': session.get('name'), 'question': data['question'], 'time': data['time'], 'id': id })
+    roomdict[room]['totalmessages'] += 1
+    print(roomdict[room])
+    emit('inquiry', {'roomdict': roomdict}, to=data['roomid'])
 
 
 
