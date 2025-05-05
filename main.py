@@ -38,7 +38,7 @@ def home():
             session["name"] = name
             session["room"] = newroom
             
-            roomdict[newroom] = {'messages': [], 'members': [], 'membercount': 0, 'totalmessages': 0}
+            roomdict[newroom] = {'messages': [], 'admin': name, 'members': [], 'membercount': 0, 'totalmessages': 0}
             print(roomdict)
 
             return redirect(url_for("room"))
@@ -71,7 +71,7 @@ def room():
     room = session.get("room")
     print(name, room)
 
-    return render_template('room.html', name=name, roomid=room)
+    return render_template('room.html', name=name, roomid=room, admin=roomdict[room]['admin'])
 @socketio.on("connect")
 def connect(auth):
     if not session.get("room"):
@@ -114,10 +114,26 @@ def inquiry(data):
     room = data['roomid']
     print(data['question'])
     id = (f'{(session.get('name')).replace(' ', '').lower()}{data['time']}')
-    roomdict[room]['messages'].append({'name': session.get('name'), 'question': data['question'], 'time': data['time'], 'id': id })
+    roomdict[room]['messages'].append({'name': session.get('name'), 'question': data['question'], 'time': data['time'], 'id': id, 'replies': [] })
     roomdict[room]['totalmessages'] += 1
     print(roomdict[room])
     emit('inquiry', {'roomdict': roomdict}, to=data['roomid'])
+
+@socketio.on("reply")
+def reply(data):
+    
+
+    print(data)
+    room = data['roomid']
+    for i in range(len(roomdict[room]['messages'])):
+        if roomdict[room]['messages'][i]['id'] == data['childof']:
+            roomdict[room]['messages'][i]['replies'].append({'name': data['user'], 'replycontent': data['replycontent'], 'replytype': data['replytype'], 'time': data['time'], 'childof': data['childof'] })
+            break
+    print('000')
+    print(roomdict)
+    print('000')
+    emit('reply', {'roomdict': roomdict}, to=data['roomid'])
+
 
 
 
