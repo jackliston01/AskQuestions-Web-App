@@ -1,6 +1,11 @@
 from flask import Flask, request, session, redirect, url_for, render_template
 import os, random, time
 from flask_socketio import join_room, leave_room, SocketIO, send, emit
+from google import genai
+
+
+client =genai.Client(api_key=os.environ.get('gemapi'))
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "vansucks"
@@ -21,7 +26,7 @@ def home():
     session.clear()
     if request.method == "POST":
         name = request.form.get("name")
-        roomnum = request.form.get("roomnum")
+        roomnum = request.form.get("roomnum").strip().upper()
         createroom = request.form.get("createroom", False)
         joinroom = request.form.get("joinroom", False)
     
@@ -134,8 +139,40 @@ def reply(data):
     print('000')
     emit('reply', {'roomdict': roomdict}, to=data['roomid'])
 
+@socketio.on("delete")
+def delete(data):
+    print('deket')
+    current = data['current']
+    user = data['user']
+    if user != roomdict[data['roomid']]['admin']:
+        return
+    else:
+        for i in range(len(roomdict[data['roomid']]['messages'])):
+            if roomdict[data['roomid']]['messages'][i]['id'] == current:
+                del roomdict[data['roomid']]['messages'][i]
+                emit('inquiry', {'roomdict': roomdict}, to=data['roomid'])
+
+                break
+@socketio.on("ai")
+def ai(data):
+    room = data['roomid']
+    if data['aitype'] == 'strengthen':
+        aitype = 'to strengthen the question'
+    else:
+        aitype = 'to answer the question'
+    for i in range(len(roomdict[room]['messages'])):
+        if roomdict[room]['messages'][i]['id'] == data['childof']:
+            prompt_type = "Please provide a few concise bullet points on how this question could be improved to be more thought-provoking and insightful, with the ultimate goal of encouraging curiosity, learning, and deeper thinking." if data['aitype'] == 'strengthen' else "Please answer the question in a concise and informative manner, providing relevant information and insights. Include possible suggestions for related, further questions."
+            question = roomdict[room]['messages'][i]['question']
+            prompt = f"Here is a question: {question}. {prompt_type} Here are further instructions provided by the user: {data['aicontext']} 3 sentences max. Don't bold or format any text -- just plain text"
+            response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
+            aiheader = f"{data['user']} asked AI {aitype} and gave the following context: {data['aicontext']}. AI responded"
+            roomdict[room]['messages'][i]['replies'].append({'name': aiheader, 'replycontent': f"{response.text}", 'replytype': data['aitype'], 'time': data['time'], 'childof': data['childof']})
+            break
 
 
+   
+    emit('reply', {'roomdict': roomdict}, to=data['roomid'])
 
 
 

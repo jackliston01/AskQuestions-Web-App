@@ -122,7 +122,7 @@
 
 #replymenu {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -143,6 +143,32 @@
 #replymenu * {
     margin: 8px 0;
 }
+
+
+#deleteconfirmation {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgb(255, 255, 255);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 300px;
+}
+
+#deleteconfirmation label {
+  color: #333;
+  display: block;
+  margin-bottom: 10px;
+}
+
+deleteconfirmation * {
+  margin: 8px 0;
+}
+
 #cancel{
 
   background-color: #ee3c57;
@@ -174,7 +200,35 @@ background-color: rgb(230, 190, 33);
 
 
 }
+#airesponse{
+  background-color: #9055e2;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
 
+
+}
+#strengthen{
+  background-color: #132985;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+
+}
+.message{
+
+  padding-bottom:8px
+
+}
 .message::after{
   content: "";
   display: block;
@@ -183,9 +237,57 @@ background-color: rgb(230, 190, 33);
 
 
 }
+.replies{
+padding-bottom:8px
+
+}
 .reply-btn{
+  margin-bottom: 8px;
   font-size: 16px;
 margin-left: 10px;
   padding: 6px 8px;
 
+}
+.ai-btn{
+  margin-bottom: 8px;
+  font-size: 16px;
+margin-left: 10px;
+  padding: 6px 8px;
+  background-color: #2bc7bf;
+
+
+}
+.delete-btn{
+  font-size: 16px;
+  margin-left: 10px;
+  padding: 6px 8px;
+  background-color: #ee3c57;
+  display: none;
+  padding-bottom:8px
+
+
+}
+
+#aimenu {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgb(255, 255, 255);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 300px;
+}
+
+#aimenu label {
+  color: #333;
+  display: block;
+  margin-bottom: 10px;
+}
+
+#aimenu * {
+  margin: 8px 0;
 }

@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='room.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/j.ico') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='home.js') }}"></script>
 
     
 </head>
@@ -20,7 +19,7 @@
     <form onsubmit="event.preventDefault()">
         <label>What are you curious about?</label>
         <input type="text" id="question" name ='question' placeholder="Think big..."/>
-        <button onclick=sendQuestion() >Submit your question</button>
+        <button onclick="sendQuestion()" >Submit your question</button>
     </form>
     <div id=board></div>
     <div id="replymenu">
@@ -29,199 +28,24 @@
         <input type="radio" name="replytype" value="feedback" > Feedback <br>
         <input type="radio" name="replytype" value="further" > Further Question<br>
         <input type="text" id="replybox" placeholder="Be appropriate..." > <br>
-        <button id ="sendreply" onclick="sendreply()">Submit</button>
+        <button id ="sendreply" onclick="sendreply()">Confirm</button>
 </div>
-
+<div id="deleteconfirmation">
+    <p>Click outside to cancel</p>
+    <label> Are you sure?</label>
+    <button id ="confirmdelete" onclick="deletemessage()">Yes, delete!</button>
+</div>
+<div id="aimenu">
+    <p>Click outside to cancel</p>
+    <label> Choose:</label>
+    <input type="radio" name="aitype" value="strengthen" > Strengthen your question <br>
+        <input type="radio" name="aitype" value="airesponse" > Get an answer from AI<br>
+        <input type="text" id="aicontext" placeholder="Add more context herel" > <br>
+    <p>Adding context will help the AI better understand your goal. <br> Importantly, AI can make mistakes, so always fact check any response.</p>
+    <button id ="aisubmit" onclick="aisumbit()">Confirm</button>
+</div>
 </body>
-<script>
-  var socketio = io();
- sessionStorage.clear()
- var memberlist = ''
- const lobbyinfo = document.getElementById("lobbyinfo")
- socketio.on("connection", (data) => {
-     sessionStorage.setItem('name', data.name)
-     sessionStorage.setItem('room', data.room)
- })
- socketio.on("joined", (data) => {
-     console.log('yooooyoo')
-     memberlist = ""
-     const roomid = sessionStorage.getItem('room');
-     roomdict = data.roomdict
-     console.log(roomdict)
-     for (let i = 0; i < roomdict[roomid]['members'].length; i++)
-         memberlist += ("<br>" + roomdict[roomid]['members'][i])
-     lobbyinfo.innerHTML = `${(roomdict[roomid]['membercount'])} Eager Question Askers <br> ${memberlist}`
-     const board = document.getElementById("board");
-     if (board.querySelectorAll('div').length === 0) {
-         console.log(data.roomdict[roomid].messages)
-         console.log(data)
-         console.log('---')
-         const messages = data.roomdict[roomid].messages
-         const board = document.getElementById('board')
-         for (const message of messages) {
-             const div = document.createElement("div");
-             div.setAttribute("data-id", message.id);
-             div.setAttribute("class", 'message');
-            div.setAttribute('id', message.id)
-             const formattedtime = new Date(message.time)
-             const clocktime = formattedtime.toTimeString().slice(0, 8);
-             div.textContent = `${message.name} [${clocktime}]: ${message.question}`;
-             board.appendChild(div);
-             const replybutton = document.createElement('button')
-             replybutton.textContent = 'Reply'
-             replybutton.setAttribute('class', 'reply-btn')
-             replybutton.setAttribute('onclick', 'openreply()')
-             replybutton.setAttribute('data-id', message.id)
-             document.querySelector(`[data-id="${message.id}"]`).appendChild(replybutton)
-         }
-     }
-     const messages = data.roomdict[roomid].messages
-     document.querySelectorAll('.replies').forEach(el => el.remove());
-
-     messages.forEach(i => {
-         if (!i.replies || i.replies.length === 0) {
-             console.log('empty')
-         } else {
-             for (var j = 0; j < i.replies.length; j++) {
-                const replydiv = document.createElement("div");
-                 replydiv.setAttribute('class', 'replies')
-                 replydiv.textContent = `${i.replies[j].name} : ${i.replies[j].replycontent}`;
-                 const tag = document.createElement('div')
-                 tag.setAttribute('class', 'replies')
-                 if (i.replies[j].replytype === 'feedback'){
-                    tag.setAttribute('id', 'feedback')
-                    tag.textContent = "Feedback"
-                 }
-                 else{
-                    tag.setAttribute('id', 'further')
-                    tag.textContent = "Further Question"
-                 }
-                 replydiv.appendChild(tag);
-                 parentdiv = document.getElementById(i.replies[j].childof)
-                 parentdiv.appendChild(replydiv);
-             }
-         }
-     })
-     if (roomdict[roomid]['admin'] ==  sessionStorage.getItem('name')){
-        sessionStorage.setItem('admin', true)
-     }
- })
- socketio.on("redirecthome", (data) => {
-     console.log()
-     console.log("Redirecting to", data.url);
-     window.location.href = data.url;
- });
-
- function sendQuestion() {
-     sQ = document.getElementById("question").value
-     if (sQ === "") {
-         return
-     }
-     console.log(sQ)
-     const name = sessionStorage.getItem('name')
-     const roomid = sessionStorage.getItem('room')
-     socketio.emit("inquiry", {
-         "question": sQ,
-         "user": name,
-         'roomid': roomid,
-         'time': Date.now()
-     })
- }
- socketio.on('inquiry', (data) => {
-     const roomid = sessionStorage.getItem('room');
-     console.log(data.roomdict[roomid].messages)
-     console.log(data)
-     console.log('---')
-     const messages = data.roomdict[roomid].messages
-     const message = messages[messages.length - 1]
-     console.log(message)
-     const board = document.getElementById('board')
-     const div = document.createElement("div");
-     div.setAttribute("data-id", message.id);
-     div.setAttribute("class", 'message');
-     div.setAttribute('id', message.id)
-     const formattedtime = new Date(message.time)
-     const clocktime = formattedtime.toTimeString().slice(0, 8);
-     div.textContent = `${message.name} [${clocktime}]: ${message.question}`;
-     board.appendChild(div);
-     const replybutton = document.createElement('button')
-     replybutton.textContent = 'Reply'
-     replybutton.setAttribute('class', 'reply-btn')
-     replybutton.setAttribute('onclick', 'openreply()')
-     replybutton.setAttribute('data-id', message.id)
-     document.querySelector(`[data-id="${message.id}"]`).appendChild(replybutton)
-     var numberofreplies = true
- })
- socketio.on('reply', (data) => {
-    document.querySelectorAll('.replies').forEach(el => el.remove());
-
-     const roomid = sessionStorage.getItem('room');
-     const messages = data.roomdict[roomid].messages
-     messages.forEach(i => {
-         if (!i.replies || i.replies.length === 0) {
-             console.log('empty')
-         } else {
-             for (var j = 0; j < i.replies.length; j++) {
-                 const replydiv = document.createElement("div");
-                 replydiv.setAttribute('class', 'replies')
-                 replydiv.textContent = `${i.replies[j].name} : ${i.replies[j].replycontent}`;
-                 const tag = document.createElement('div')
-                 tag.setAttribute('class', 'replies')
-                 if (i.replies[j].replytype === 'feedback'){
-                    tag.setAttribute('id', 'feedback')
-                    tag.textContent = "Feedback"
-                 }
-                 else{
-                    tag.setAttribute('id', 'further')
-                    tag.textContent = "Further Question"
-                 }
-                 replydiv.appendChild(tag);
-                 parentdiv = document.getElementById(i.replies[j].childof)
-                 parentdiv.appendChild(replydiv);
-             }
-         }
-     })
- })
-
- function openreply() {
-     console.log('reply function called')
-     const replymenu = document.getElementById('replymenu')
-     replymenu.style.display = (replymenu.style.display === 'block') ? 'none' : 'block';
- }
-
- function sendreply() {
-     console.log('sumbitted')
-     const replymenu = document.getElementById('replymenu')
-     replymenu.style.display = 'none';
-     const replytype = document.querySelector('input[name="replytype"]:checked').value
-     const replycontent = document.getElementById('replybox').value
-     const name = sessionStorage.getItem('name')
-     const roomid = sessionStorage.getItem('room')
-     socketio.emit("reply", {
-         "childof": (localStorage.getItem("currentreply")),
-         "replycontent": replycontent,
-         "replytype": replytype,
-         "user": name,
-         'roomid': roomid,
-         'time': Date.now()
-     })
- }
- document.addEventListener('click', function(event) {
-     if (event.target.matches('button[data-id]')) {
-         const dataid = event.target.getAttribute("data-id")
-         console.log(dataid)
-         localStorage.setItem("currentreply", dataid)
-     }
-     const replymenu = document.getElementById('replymenu')
-     const replyBtns = document.querySelectorAll('.reply-btn')
-     const clickedInsideBtn = Array.from(replyBtns).some(btn => btn.contains(event.target));
-     if (!clickedInsideBtn && !replymenu.contains(event.target)) {
-         console.log('hidden')
-         console.log(clickedInsideBtn)
-         replymenu.style.display = 'none';
-     }
- });
-</script>
+<script src="{{ url_for('static', filename='room.js') }}"></script>
 </html>
 
 
