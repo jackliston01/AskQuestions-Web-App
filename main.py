@@ -119,7 +119,7 @@ def connect(auth):
 def inquiry(data):
     print(data)
     if data['roomid'] not in roomdict:
-        leave_room(data.roomid)
+        leave_room(data['roomid'])
         session.clear()
         emit('redirecthome', {'url': "/"} )
         return
@@ -171,7 +171,7 @@ def ai(data):
         if roomdict[room]['messages'][i]['id'] == data['childof']:
             prompt_type = "Please provide a few concise bullet points on how this question could be improved to be more thought-provoking and insightful, with the ultimate goal of encouraging curiosity, learning, and deeper thinking." if data['aitype'] == 'strengthen' else "Please answer the question in a concise and informative manner, providing relevant information and insights. Include possible suggestions for related, further questions."
             question = roomdict[room]['messages'][i]['question']
-            prompt = f"Here is a question: {question}. {prompt_type} Here are further instructions provided by the user: {data['aicontext']} 3 sentences max. Don't bold or format any text -- just plain text"
+            prompt = f"Here is a question: {question}. {prompt_type} Here are further instructions provided by the user: {data['aicontext']} 3 sentences max. Do not bold or format any text -- just plain text"
             response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
             aiheader = f"{data['user']} asked AI {aitype} and gave the following context: {data['aicontext']}. AI responded"
             roomdict[room]['messages'][i]['replies'].append({'name': aiheader, 'replycontent': f"{response.text}", 'replytype': data['aitype'], 'time': data['time'], 'childof': data['childof']})
