@@ -125,7 +125,7 @@ def inquiry(data):
         return
     room = data['roomid']
     print(data['question'])
-    id = (f'{(session.get('name')).replace(' ', '').lower()}{data['time']}')
+    id = f"{(session.get('name')).replace(' ', '').lower()}{data['time']}"
     roomdict[room]['messages'].append({'name': session.get('name'), 'question': data['question'], 'time': data['time'], 'id': id, 'replies': [] })
     roomdict[room]['totalmessages'] += 1
     print(roomdict[room])
