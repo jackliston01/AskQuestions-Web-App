@@ -4,13 +4,20 @@ from flask_socketio import join_room, leave_room, SocketIO, send, emit
 from google import genai
 
 
-client =genai.Client(api_key=os.environ.get('gemapi'))
+
+gemkey = os.environ.get('gemapi')
+client = genai.Client(api_key=gemkey)
+
+async_mode = None
 
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "vansucks"
 socketio = SocketIO(app)
 roomdict = {}
+
+
+
 def genroomid(length):
     chars = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] #31 items
     roomid = ""
