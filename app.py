@@ -13,7 +13,7 @@ async_mode = None
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "vansucks"
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode=async_mode, cors_allowed_origins="*")
 roomdict = {}
 
 
@@ -183,5 +183,5 @@ def ai(data):
 
 
 
-if __name__ == '__main__':
+if __name__ == '__app__':
     socketio.run(app, debug=True)
