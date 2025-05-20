@@ -1,293 +1,310 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+/* Modern CSS Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --primary: #4361ee;
+  --primary-hover: #3a56d4;
+  --secondary: #4cc9f0;
+  --success: #2dc653;
+  --warning: #f7b801;
+  --danger: #ef476f;
+  --dark: #212529;
+  --gray-dark: #495057;
+  --gray: #adb5bd;
+  --gray-light: #e9ecef;
+  --light: #f8f9fa;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+  --transition: all 0.25s ease;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--light);
+  color: var(--dark);
+  padding: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Header */
+#topheader {
+  background-color: var(--primary);
+  color: white;
+  text-align: center;
+  padding: 15px;
+  width: 100%;
+  box-shadow: var(--shadow);
+  position: static;
+  top: 0;
+  z-index: 10;
+  opacity: 75%;
+}
+
+/* Export Button */
+#openexport {
+  position: absolute;
+  top: 60px;
+  right: 15px;
+  background-color: var(--dark);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+#openexport:hover {
+  background-color: var(--gray-dark);
+  transform: translateY(-2px);
+}
+
+/* Lobby Info */
+#lobbyinfo {
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin: 30px auto 20px;
+  text-align: center;
+  max-width: 600px;
+  box-shadow: var(--shadow);
+  font-weight: 600;
+  color: var(--dark);
+  width: 90%;
+}
+
+/* Question Form */
+form {
+  width: 90%;
+  max-width: 600px;
+  background-color: white;
+  margin: 0 auto 30px;
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+input[type="text"] {
+  padding: 14px;
+  border: 2px solid var(--gray-light);
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  margin-bottom: 20px;
+  transition: var(--transition);
+  width: 100%;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+}
+
+input[type="radio"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+button {
+  padding: 12px 20px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: var(--transition);
+  align-self: center;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+/* Message Board */
+#board {
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Message Styling */
+.message {
+  background-color: white;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.message::after {
+  content: "";
+  display: block;
+  margin: 15px 0 5px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.reply-btn, .ai-btn, .delete-btn {
+  margin: 0 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+}
+
+.reply-btn {
+  background-color: var(--secondary);
+}
+
+.ai-btn {
+  background-color: var(--success);
+}
+
+.delete-btn {
+  background-color: var(--danger);
+}
+
+.replies {
+  margin-top: 12px;
+  padding: 12px;
+  border-left: 3px solid var(--gray-light);
+  margin-left: 15px;
+  font-size: 15px;
+}
+
+#feedback, #further, #airesponse, #strengthen {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+#feedback {
+  background-color: var(--warning);
+  color: var(--dark);
+}
+
+#further {
+  background-color: var(--success);
+  color: white;
+}
+
+#airesponse {
+  background-color: var(--secondary);
+  color: var(--dark);
+}
+
+#strengthen {
+  background-color: var(--primary);
+  color: white;
+}
+
+#replymenu, #deleteconfirmation, #aimenu, #exportmenu {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 320px;
+  max-width: 90%;
+}
+
+#replymenu p, #deleteconfirmation p, #aimenu p, #exportmenu p {
+  color: var(--gray-dark);
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+#sendreply, #confirmdelete, #aisubmit {
+  width: 100%;
+  margin-top: 15px;
+}
+
+#confirmdelete {
+  background-color: var(--danger);
+}
+
+#confirmdelete:hover {
+  background-color: #d93c5e;
+}
+
+@media (max-width: 768px) {
+  form, #board {
+    width: 95%;
+  }
+  #openexport {
+    top: 75px;
+    right: 10px;
   }
   
-  body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f5f5f5;
+  #topheader {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  
+  .reply-btn, .ai-btn, .delete-btn {
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 0;
+    margin-right: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .message {
+    padding: 15px;
+  }
+  
+  #replymenu, #deleteconfirmation, #aimenu, #exportmenu {
     padding: 20px;
-  }
-  
-  p {
-    margin-bottom: 10px;
-    color: #555;
-    text-align: center;
-  }
-  
-  #lobbyinfo {
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
+    min-width: 280px;
   }
   
   form {
+    padding: 20px;
+  }
+  
+  #sendquestion {
     width: 100%;
-    max-width: 600px;
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    margin-bottom: 20px;
   }
-  
-  label {
-    display: block;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 15px;
-    font-size: 18px;
-  }
-  
-  input[type="text"] {
-    padding: 15px;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    width: 100%;
-    margin-bottom: 20px;
-    transition: border-color 0.3s;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset;
-  }
-  
-  input[type="text"]:focus {
-    outline: none;
-    border-color: #4285f4;
-    box-shadow: 0 0 8px rgba(66, 133, 244, 0.5);
-  }
-  
-  button {
-    padding: 12px 24px;
-    background-color: #4285f4;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #3367d6;
-  }
-  
-  #board {
-    width: 100%;
-    max-width: 800px;
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-/* */
-  
-  @media (max-width: 768px) {
-    form {
-      padding: 20px;
-    }
-    
-    label {
-      font-size: 16px;
-    }
-    
-    input[type="text"] {
-      padding: 12px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    form {
-      padding: 15px;
-    }
-    
-    button {
-      width: 100%;
-    }
-    
-    p {
-      font-size: 14px;
-    }
-  }
-
-
-
-#replymenu {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgb(255, 255, 255);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    min-width: 300px;
 }
 
-#replymenu label {
-    color: #333;
-    display: block;
-    margin-bottom: 10px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-#replymenu * {
-    margin: 8px 0;
-}
-
-
-#deleteconfirmation {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgb(255, 255, 255);
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  min-width: 300px;
-}
-
-#deleteconfirmation label {
-  color: #333;
-  display: block;
-  margin-bottom: 10px;
-}
-
-deleteconfirmation * {
-  margin: 8px 0;
-}
-
-#cancel{
-
-  background-color: #ee3c57;
-
-}
-
-#feedback{
-
-background-color: rgb(230, 190, 33);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-}
-
-#further{
-  background-color: #26e8bb;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-
-}
-#airesponse{
-  background-color: #9055e2;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-
-}
-#strengthen{
-  background-color: #132985;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-
-}
-.message{
-
-  padding-bottom:8px
-
-}
-.message::after{
-  content: "";
-  display: block;
-  border-bottom: 1px solid #000;
-  margin: 10px 0;
-
-
-}
-.replies{
-padding-bottom:8px
-
-}
-.reply-btn{
-  margin-bottom: 8px;
-  font-size: 16px;
-margin-left: 10px;
-  padding: 6px 8px;
-
-}
-.ai-btn{
-  margin-bottom: 8px;
-  font-size: 16px;
-margin-left: 10px;
-  padding: 6px 8px;
-  background-color: #2bc7bf;
-
-
-}
-.delete-btn{
-  font-size: 16px;
-  margin-left: 10px;
-  padding: 6px 8px;
-  background-color: #ee3c57;
-  display: none;
-  padding-bottom:8px
-
-
-}
-
-#aimenu {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgb(255, 255, 255);
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  min-width: 300px;
-}
-
-#aimenu label {
-  color: #333;
-  display: block;
-  margin-bottom: 10px;
-}
-
-#aimenu * {
-  margin: 8px 0;
+.message {
+  animation: fadeIn 0.3s ease-out forwards;
 }

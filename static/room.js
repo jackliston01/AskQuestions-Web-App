@@ -247,6 +247,13 @@ document.addEventListener('click', function(event) {
         
         aimenu.style.display = 'none';
     }
+    const exportmenu = document.getElementById('exportmenu')
+    const exportbutton = document.getElementById('openexport')
+    if (!exportbutton.contains(event.target) && !exportmenu.contains(event.target)) {
+        console.log('hidden')
+        
+        exportmenu.style.display = 'none';
+    }
    
 });
 
@@ -341,3 +348,21 @@ function openai(){
 
     console.log('openai')
 }
+
+
+function openexport(){
+    console.log('ai open function called')
+    const exportmenu = document.getElementById('exportmenu')
+    const roomid = sessionStorage.getItem('room')
+    exportmenu.style.display = (exportmenu.style.display === 'block') ? 'none' : 'block';
+    socketio.emit("export", {'roomid': roomid})
+    console.log('openai')
+}
+
+socketio.on('export2', (data) => {
+    console.log(data)
+    navigator.clipboard.writeText(JSON.stringify(data));
+
+
+
+})

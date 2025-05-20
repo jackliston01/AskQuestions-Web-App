@@ -13,13 +13,19 @@
     
 </head>
 <body>
-    <p>Your name: {{name}} | Room Number: {{roomid}} | Room Admin: {{admin}}</p>
+    <p id="topheader">Your name: {{name}} | Room Number: {{roomid}} | Room Admin: {{admin}}</p>
+            <button id="openexport" onclick="openexport()" >Export as JSON</button>
+
+    <div id="exportmenu">
+        <p>Click outside to cancel</p>
+        <label> Copied!</label>
+    </div>
     
     <p id="lobbyinfo">Question Askers: </p>
     <form onsubmit="event.preventDefault()">
         <label>What are you curious about?</label>
         <input type="text" id="question" name ='question' placeholder="Think big..."/>
-        <button onclick="sendQuestion()" >Submit your question</button>
+        <button id="sendquestion" onclick="sendQuestion()" >Submit your question</button>
     </form>
     <div id=board></div>
     <div id="replymenu">

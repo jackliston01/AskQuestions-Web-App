@@ -8,12 +8,11 @@ from google import genai
 gemkey = os.environ.get('gemapi')
 client = genai.Client(api_key=gemkey)
 
-async_mode = None
 
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "vansucks"
-socketio = SocketIO(app, async_mode=async_mode, cors_allowed_origins="*")
+socketio = SocketIO(app)
 roomdict = {}
 
 
@@ -181,7 +180,12 @@ def ai(data):
    
     emit('reply', {'roomdict': roomdict}, to=data['roomid'])
 
+@socketio.on("export")
+def export(data):
+    room = data['roomid']
+    emit('export2', (roomdict[room]), room=request.sid)
+    print('fff')
 
 
-if __name__ == '__app__':
+if __name__ == '__main__':
     socketio.run(app, debug=True)
